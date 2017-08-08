@@ -1,52 +1,61 @@
 package main
 
-import (
-    "fmt"
-)
-
-type Ball struct {
-    number int
-}
+import "fmt"
+import "encoding/json"
 
 type Track struct {
     name string
     capacity int
-    balls []Ball
+    balls []int
 }
 
 type BallClock struct {
     queueSize int
-    queue []Ball
+    queue []int `json:"main"`
     minTrack Track
     fiveMinTrack Track
     hourTrack Track
+}
+
+func Reverse(balls []int) []int {
+    for i, j := 0, len(balls)-1; i < j; i, j = i+1, j-1 {
+        balls[i], balls[j] = balls[j], balls[i]
+    }
+    return balls
 }
 
 func (track *Track) AtCapacity() bool {
     return len(track.balls) >= track.capacity
 }
 
-func (track *Track) Spill() (ball Ball, spillage []Ball) {
+func (track *Track) Spill() (ball int, spillage []int) {
     ball = track.balls[track.capacity - 1]
-    spillage = track.balls[:(track.capacity - 1)]
-    track.balls = []Ball{}
+    spillage = Reverse(track.balls[:(track.capacity - 1)])
+    track.balls = []int{}
     return ball, spillage
 }
 
-func (track *Track) Add(ball Ball)  {
+func (track *Track) Add(ball int) {
     track.balls = append(track.balls, ball)
+}
+
+func (ballClock *BallClock) Json() string {
+    fmt.Println(ballClock)
+    result, _ := json.Marshal(ballClock)
+    fmt.Println(string(result))
+    return string(result)
 }
 
 func newClock(queueSize int, ballClock *BallClock) {
     ballClock.queueSize = queueSize
     for i := 1; i <= queueSize; i++ {
-        ball := Ball{i}
+        ball := i
         ballClock.queue = append(ballClock.queue, ball)
     }
     ballClock.minTrack.capacity = 5
-    ballClock.minTrack.name = "Minute"
+    ballClock.minTrack.name = "Min"
     ballClock.fiveMinTrack.capacity = 12
-    ballClock.fiveMinTrack.name = "Five Minute"
+    ballClock.fiveMinTrack.name = "FiveMin"
     ballClock.hourTrack.capacity = 12
     ballClock.hourTrack.name = "Hour"
 }
@@ -83,10 +92,10 @@ func isOrderReset(clock *BallClock) bool {
     return allBallsInQueue && inOrder(clock.queue)
 }
 
-func inOrder(queue []Ball) bool {
+func inOrder(queue []int) bool {
 
     for i := 0; i < len(queue); i++ {
-        if queue[i].number != i + 1 {
+        if queue[i] != i + 1 {
             return false
         }
     }
@@ -113,29 +122,45 @@ func inOrder(queue []Ball) bool {
 //    //return i, 0
 //}
 
-func main() {
 
-    var ballClock BallClock
-    newClock(27, &ballClock)
 
+type JsonClock struct {
+    Min   []int      `json:"Min"`
+    FiveMin   []int      `json:"FiveMin"`
+    Hour   []int      `json:"Hour"`
+    Main   []int      `json:"Main"`
+
+}
+
+func runClock(ballClock *BallClock) {
     minutes := 0
 
-    //for i := 0; i < 720; i++ {
-    //    tickMinute(&ballClock)
-    //    minutes += 1
-    //}
-
     for {
-        tickMinute(&ballClock)
+        tickMinute(ballClock)
         minutes += 1
-        if isOrderReset(&ballClock) {
+        if isOrderReset(ballClock) {
             break
         }
     }
 
+    days := minutes / (60 * 24)
+    fmt.Printf("%d balls cycle after %d days.\n", ballClock.queueSize, days)
 
-    fmt.Println(ballClock)
-    days := float64(minutes) / (60 * 24)
-    fmt.Println(days)
+    jsonClock := &JsonClock{
+        Min:     ballClock.minTrack.balls,
+        FiveMin: ballClock.fiveMinTrack.balls,
+        Hour:        ballClock.hourTrack.balls,
+        Main:        ballClock.queue,
+    }
+    result, _ := json.Marshal(jsonClock)
+    fmt.Println(string(result))
+}
+
+func main() {
+
+    var ballClock BallClock
+    
+    newClock(127, &ballClock)
+    runClock(&ballClock)
 
 }

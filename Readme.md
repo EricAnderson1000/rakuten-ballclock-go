@@ -9,6 +9,7 @@ GO 1.8.3
 Running
 -----------
 ```export GOPATH=CURRENT_DIRECTORY```
+
 ```go run src/main/Main.go```
 
 

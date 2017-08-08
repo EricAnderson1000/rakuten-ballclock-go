@@ -38,14 +38,6 @@ func ReadInput() ClockInput {
     }
 }
 
-type JsonClock struct {
-    Min   []int      `json:"Min"`
-    FiveMin   []int      `json:"FiveMin"`
-    Hour   []int      `json:"Hour"`
-    Main   []int      `json:"Main"`
-
-}
-
 func main() {
     var inputSlice []ClockInput
 

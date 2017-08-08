@@ -5,7 +5,7 @@ import (
     "encoding/json"
 )
 
-type Track struct {
+type track struct {
     capacity int
     balls []int
 }
@@ -13,9 +13,9 @@ type Track struct {
 type BallClock struct {
     queueSize int
     queue []int
-    minTrack Track
-    fiveMinTrack Track
-    hourTrack Track
+    minTrack track
+    fiveMinTrack track
+    hourTrack track
 }
 
 func reverse(balls []int) []int {
@@ -25,18 +25,18 @@ func reverse(balls []int) []int {
     return balls
 }
 
-func (track *Track) AtCapacity() bool {
+func (track *track) AtCapacity() bool {
     return len(track.balls) >= track.capacity
 }
 
-func (track *Track) spill() (ball int, spillage []int) {
+func (track *track) spill() (ball int, spillage []int) {
     ball = track.balls[track.capacity - 1]
     spillage = reverse(track.balls[:(track.capacity - 1)])
     track.balls = []int{}
     return ball, spillage
 }
 
-func (track *Track) add(ball int) {
+func (track *track) add(ball int) {
     track.balls = append(track.balls, ball)
 }
 
@@ -82,7 +82,7 @@ func inOrder(queue []int) bool {
     return true
 }
 
-type JsonClock struct {
+type jsonClock struct {
     Min   []int      `json:"Min"`
     FiveMin   []int      `json:"FiveMin"`
     Hour   []int      `json:"Hour"`
@@ -102,7 +102,7 @@ func RunClock(haltAt int, ballClock *BallClock) string {
     }
 
     if haltAt == minutes {
-        jsonClock := &JsonClock{
+        jsonClock := &jsonClock{
             Min:     ballClock.minTrack.balls,
             FiveMin: ballClock.fiveMinTrack.balls,
             Hour:        ballClock.hourTrack.balls,

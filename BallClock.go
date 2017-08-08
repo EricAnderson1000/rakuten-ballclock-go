@@ -1,7 +1,13 @@
 package main
 
 import "fmt"
-import "encoding/json"
+import (
+    "encoding/json"
+    "strconv"
+    "bufio"
+    "os"
+    "strings"
+)
 
 type Track struct {
     name string
@@ -11,7 +17,7 @@ type Track struct {
 
 type BallClock struct {
     queueSize int
-    queue []int `json:"main"`
+    queue []int
     minTrack Track
     fiveMinTrack Track
     hourTrack Track
@@ -46,7 +52,7 @@ func (ballClock *BallClock) Json() string {
     return string(result)
 }
 
-func newClock(queueSize int, ballClock *BallClock) {
+func NewClock(queueSize int, ballClock *BallClock) {
     ballClock.queueSize = queueSize
     for i := 1; i <= queueSize; i++ {
         ball := i
@@ -60,7 +66,7 @@ func newClock(queueSize int, ballClock *BallClock) {
     ballClock.hourTrack.name = "Hour"
 }
 
-func tickMinute(clock *BallClock) {
+func TickMinute(clock *BallClock) {
 
     ball := clock.queue[0]
     clock.queue = append(clock.queue[:0], clock.queue[1:]...)
@@ -85,14 +91,14 @@ func tickMinute(clock *BallClock) {
     }
 }
 
-func isOrderReset(clock *BallClock) bool {
+func OrderRest(clock *BallClock) bool {
 
     allBallsInQueue := len(clock.queue) == clock.queueSize
 
-    return allBallsInQueue && inOrder(clock.queue)
+    return allBallsInQueue && InOrder(clock.queue)
 }
 
-func inOrder(queue []int) bool {
+func InOrder(queue []int) bool {
 
     for i := 0; i < len(queue); i++ {
         if queue[i] != i + 1 {
@@ -102,27 +108,34 @@ func inOrder(queue []int) bool {
     return true
 }
 
-//func readInput()  {
-//    //b, _ := strconv.ParseInt("123", 0, 64)
-//    //fmt.Println(b)
-//
-//    //reader := bufio.NewReader(os.Stdin)
-//    //text, _ := reader.ReadString('\n')
-//    ////fmt.Println(text)
-//    //i, _ := strconv.Atoi(text)
-//    //fmt.Println(i)
-//    //fmt.Printf("%d \n", i)
-//
-//
-//    var i, j int
-//    fmt.Scan(&i, &j, i, j)
-//    fmt.Println(i, j)
-//
-//
-//    //return i, 0
-//}
+type ProgramInput struct {
+    numberOfBalls int
+    haltAtMinute int
+}
 
+// Reads each input line and parses out to two integers.
+func ReadInput() ProgramInput {
+    reader := bufio.NewReader(os.Stdin)
+    text, error := reader.ReadString('\n')
+    text = strings.TrimSpace(text)
+     if error != nil {
+        fmt.Errorf("an error: %s", error)
+    }
 
+    stringSlice := strings.Split(text, " ")
+
+    var j int = -1
+
+    i, _ := strconv.Atoi(stringSlice[0])
+    if len(stringSlice) == 2 {
+        j, _ = strconv.Atoi(stringSlice[1])
+    }
+
+    return ProgramInput{
+        numberOfBalls: i,
+        haltAtMinute: j,
+    }
+}
 
 type JsonClock struct {
     Min   []int      `json:"Min"`
@@ -132,35 +145,48 @@ type JsonClock struct {
 
 }
 
-func runClock(ballClock *BallClock) {
+func RunClock(haltAt int, ballClock *BallClock) string {
     minutes := 0
 
     for {
-        tickMinute(ballClock)
+        TickMinute(ballClock)
         minutes += 1
-        if isOrderReset(ballClock) {
+        if haltAt == minutes || OrderRest(ballClock) {
             break
         }
     }
 
-    days := minutes / (60 * 24)
-    fmt.Printf("%d balls cycle after %d days.\n", ballClock.queueSize, days)
-
-    jsonClock := &JsonClock{
-        Min:     ballClock.minTrack.balls,
-        FiveMin: ballClock.fiveMinTrack.balls,
-        Hour:        ballClock.hourTrack.balls,
-        Main:        ballClock.queue,
+    if haltAt == minutes {
+        jsonClock := &JsonClock{
+            Min:     ballClock.minTrack.balls,
+            FiveMin: ballClock.fiveMinTrack.balls,
+            Hour:        ballClock.hourTrack.balls,
+            Main:        ballClock.queue,
+        }
+        result, _ := json.Marshal(jsonClock)
+        return string(result)
+    } else {
+        days := minutes / (60 * 24)
+        return fmt.Sprintf("%d balls cycle after %d days.", ballClock.queueSize, days)
     }
-    result, _ := json.Marshal(jsonClock)
-    fmt.Println(string(result))
 }
 
 func main() {
+    var argumentSlice []ProgramInput
 
-    var ballClock BallClock
-    
-    newClock(127, &ballClock)
-    runClock(&ballClock)
+    for {
+        input := ReadInput()
+        if input.numberOfBalls == 0 {
+          break
+        }
+        argumentSlice = append(argumentSlice, input)
+    }
+
+    for _, j := range argumentSlice {
+        var ballClock BallClock
+        NewClock(j.numberOfBalls, &ballClock)
+        output := RunClock(j.haltAtMinute, &ballClock)
+        fmt.Println(output)
+    }
 
 }

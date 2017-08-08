@@ -10,6 +10,8 @@ Running
 -----------
 ```export GOPATH=CURRENT_DIRECTORY```
 
+then
+
 ```go run src/main/Main.go```
 
 

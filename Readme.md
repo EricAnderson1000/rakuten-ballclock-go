@@ -8,7 +8,8 @@ GO 1.8.3
 
 Running
 -----------
-``` go run BallClock.go```
+```export GOPATH=CURRENT_DIRECTORY```
+```go run src/main/Main.go```
 
 
 

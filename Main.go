@@ -44,13 +44,6 @@ func (track *Track) Add(ball int) {
     track.balls = append(track.balls, ball)
 }
 
-func (ballClock *BallClock) Json() string {
-    fmt.Println(ballClock)
-    result, _ := json.Marshal(ballClock)
-    fmt.Println(string(result))
-    return string(result)
-}
-
 func NewClock(queueSize int, ballClock *BallClock) {
     ballClock.queueSize = queueSize
     for i := 1; i <= queueSize; i++ {

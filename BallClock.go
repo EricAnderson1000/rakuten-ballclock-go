@@ -1,7 +1,7 @@
 package main
 
-import "fmt"
 import (
+    "fmt"
     "encoding/json"
     "strconv"
     "bufio"
@@ -10,7 +10,6 @@ import (
 )
 
 type Track struct {
-    name string
     capacity int
     balls []int
 }
@@ -59,11 +58,8 @@ func NewClock(queueSize int, ballClock *BallClock) {
         ballClock.queue = append(ballClock.queue, ball)
     }
     ballClock.minTrack.capacity = 5
-    ballClock.minTrack.name = "Min"
     ballClock.fiveMinTrack.capacity = 12
-    ballClock.fiveMinTrack.name = "FiveMin"
     ballClock.hourTrack.capacity = 12
-    ballClock.hourTrack.name = "Hour"
 }
 
 func TickMinute(clock *BallClock) {
@@ -91,7 +87,7 @@ func TickMinute(clock *BallClock) {
     }
 }
 
-func OrderRest(clock *BallClock) bool {
+func OrderReset(clock *BallClock) bool {
 
     allBallsInQueue := len(clock.queue) == clock.queueSize
 
@@ -151,7 +147,7 @@ func RunClock(haltAt int, ballClock *BallClock) string {
     for {
         TickMinute(ballClock)
         minutes += 1
-        if haltAt == minutes || OrderRest(ballClock) {
+        if haltAt == minutes || OrderReset(ballClock) {
             break
         }
     }

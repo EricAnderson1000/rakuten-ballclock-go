@@ -44,14 +44,10 @@ func main() {
     for {
         input := ReadInput()
         if input.numberOfBalls == 0 {
-          break
+            break
         }
         inputSlice = append(inputSlice, input)
     }
-
-    //var ballClock clock.BallClock
-    //fmt.Println(ballClock)
-
 
     for _, j := range inputSlice {
         var ballClock clock.BallClock

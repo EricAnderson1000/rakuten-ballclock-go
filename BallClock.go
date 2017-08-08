@@ -104,13 +104,13 @@ func InOrder(queue []int) bool {
     return true
 }
 
-type ProgramInput struct {
+type ClockInput struct {
     numberOfBalls int
     haltAtMinute int
 }
 
 // Reads each input line and parses out to two integers.
-func ReadInput() ProgramInput {
+func ReadInput() ClockInput {
     reader := bufio.NewReader(os.Stdin)
     text, error := reader.ReadString('\n')
     text = strings.TrimSpace(text)
@@ -127,7 +127,7 @@ func ReadInput() ProgramInput {
         j, _ = strconv.Atoi(stringSlice[1])
     }
 
-    return ProgramInput{
+    return ClockInput{
         numberOfBalls: i,
         haltAtMinute: j,
     }
@@ -168,17 +168,17 @@ func RunClock(haltAt int, ballClock *BallClock) string {
 }
 
 func main() {
-    var argumentSlice []ProgramInput
+    var inputSlice []ClockInput
 
     for {
         input := ReadInput()
         if input.numberOfBalls == 0 {
           break
         }
-        argumentSlice = append(argumentSlice, input)
+        inputSlice = append(inputSlice, input)
     }
 
-    for _, j := range argumentSlice {
+    for _, j := range inputSlice {
         var ballClock BallClock
         NewClock(j.numberOfBalls, &ballClock)
         output := RunClock(j.haltAtMinute, &ballClock)

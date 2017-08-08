@@ -91,6 +91,10 @@ type jsonClock struct {
 }
 
 func RunClock(haltAt int, ballClock *BallClock) string {
+    if ballClock.queueSize < 27 || ballClock.queueSize > 127 {
+        return fmt.Sprintf("Invalid number of balls : %d", ballClock.queueSize)
+    }
+
     minutes := 0
 
     for {

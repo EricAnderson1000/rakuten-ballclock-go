@@ -15,6 +15,10 @@ then
 ```go run src/main/Main.go```
 
 
+Running Tests
+---------
+```go test src/clock/clock_test.go ```
+
 
 Problem
 ----------

@@ -2,6 +2,14 @@ https://stackoverflow.com/questions/28983831/golang-read-text-file-line-by-line-
 
 http://blog.narenarya.in/tips-tricks-go.html
 
+Getting Started
+https://www.goinggo.net/2016/05/installing-go-and-your-workspace.html
 
 Pointers
 http://piotrzurek.net/2013/09/20/pointers-in-go.html
+
+Workspace
+https://golang.org/doc/code.html
+
+Testing
+https://golang.org/pkg/testing/
